@@ -1,5 +1,4 @@
 import gym
-import pandas as pd
 import numpy as np
 import random
 
@@ -66,6 +65,8 @@ class QLearner(object):
 
 
 def cart_pole_with_qlearning():
+    import pandas as pd
+
     env = gym.make('CartPole-v0')
     experiment_filename = './cartpole-experiment-1'
     env.monitor.start(experiment_filename, force=True)

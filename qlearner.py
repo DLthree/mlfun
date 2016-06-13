@@ -1,10 +1,11 @@
 import gym
 import numpy as np
 
-def select_a_with_epsilon_greedy(curr_s, q_value, epsilon=0.1):
-    a = np.argmax(q_value[curr_s, :])
-    if np.random.rand() < epsilon:
+def select_a_with_epsilon_greedy(curr_s, q_value, epsilon=0.1, force_random=False):
+    if (np.random.rand() < epsilon) or force_random:
         a = np.random.randint(q_value.shape[1])
+    else:
+        a = np.argmax(q_value[curr_s, :])
     return a
 
 class QLearner(object):
@@ -21,8 +22,8 @@ class QLearner(object):
         self.epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         self.algorithm_type = algorithm_type
-        # self.q_value = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
-        self.q_value = np.zeros([num_states, num_actions])
+        self.q_value = np.random.uniform(low=-1, high=1, size=(num_states, num_actions))
+        # self.q_value = np.zeros([num_states, num_actions])
 
     def set_initial_state(self, curr_s):
         """
@@ -34,14 +35,14 @@ class QLearner(object):
         self.curr_a = select_a_with_epsilon_greedy(curr_s, self.q_value, epsilon=self.epsilon)
         return self.curr_a
 
-    def move(self, next_s, r):
+    def move(self, next_s, r, force_random=False):
         """
         @summary: Moves to the given state with given reward and returns action
         @param next_s: The new state
         @param r: The reward
         @returns: The selected action
         """
-        next_a = select_a_with_epsilon_greedy(next_s, self.q_value, epsilon=self.epsilon)
+        next_a = select_a_with_epsilon_greedy(next_s, self.q_value, epsilon=self.epsilon, force_random=force_random)
 
         if self.algorithm_type == 'sarsa':
             delta = r + self.gamma * self.q_value[next_s, next_a] - self.q_value[self.curr_s, self.curr_a]
